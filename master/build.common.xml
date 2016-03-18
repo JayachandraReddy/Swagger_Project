@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<project name="swag helper" basedir=".">
+    <path id="path.classpath.servlet">
+        <pathelement location="${tomcatdir}/lib/servlet-api.jar" />
+    </path>
+
+    <path id="path.classpath.requiredJars">
+        <fileset dir="${sdkdir}" includes="**/*.jar" />
+    </path>
+
+    <!-- Target definitions -->
+    <target name="getVersion" depends="-getBuildNumEnv,-getBuildNumDev" description="Get build number">
+        <property name="full-version" value="${buildnum}" />
+    </target>
+
+    <target name="-getBuildNumEnv" if="env.BUILDNUMBER">
+        <!-- Gets build number from environment variable "BUILDNUMBER", if set -->
+        <property name="buildnum" value="${env.BUILDVERSION}.${env.BUILDBRANCH}.${env.BUILDNUMBER}" />
+    </target>
+
+    <target name="-getBuildNumDev" unless="buildnum">
+        <!-- Sets build number based on the current date, if it hasn't already been set -->
+        <tstamp />
+        <property name="buildnum" value="${DSTAMP}_DEV" />
+    </target>
+
+    <target name="init-common" depends="getVersion">
+        <echo message="Using Java version ${jdk.version}." />
+        <property name="srcdir" value="src/main/java" />
+        <property name="swagger" value="swagger.war" />
+        <mkdir dir="${destdir}" />
+        <mkdir dir="${generatedwars}" />
+    </target>
+
+    <target name="build-swag-src" depends="init-common" description="Build swag classes">
+        <javac srcdir="${srcdir}" destdir="${destdir}" debug="true">
+            <classpath>
+                <path refid="path.classpath.servlet" />
+                <path refid="path.classpath.requiredJars" />
+            </classpath>
+            <include name="com/**/*.java" />
+        </javac>
+    </target>
+
+    <target name="build-swag-war" depends="build-swag-src" description="Create swag.war">
+        <war destfile="${generatedwars}/${swagger}" webxml="WebContent/WEB-INF/web.xml">
+            <lib dir="${sdkdir}">
+                <include name="**/*.jar" />
+            </lib>
+
+            <classes dir="${destdir}">
+                <include name="com/**/*.class" />
+            </classes>
+            <manifest>
+                <attribute name="Implementation-Version" value="${full-version}" />
+            </manifest>
+        </war>
+    </target>
+    <target name="clean" description="clean">
+        <delete dir="${destdir}" />
+    </target>
+</project>

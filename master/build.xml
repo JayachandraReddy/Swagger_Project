@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="swag" basedir="." default="all">
+
+    <property file="build.properties" />
+
+    <!-- Location of a folder with SDK and third party JAR files -->
+    <property name="sdkdir" value="WebContent/WEB-INF/lib" />
+
+    <!-- Location of a folder with Tomcat installation -->
+	 <property name="tomcatdir" value="C:/apache-tomcat-7.0.65" />
+    <property name="toolsdir" value="${sdkdir}" />
+    <property name="version" value="4.0" />
+    <property name="destdir" value="swag-build" />
+    <property name="generatedwars" value="${destdir}/war" />
+
+    <!-- Location of a folder with commons-configuration jar -->
+    <property name="thirdparty.commons-configuration" value="${sdkdir}"  />
+    <!-- Location of a folder with commons-lang jar -->
+    <property name="thirdparty.commons-lang" value="${sdkdir}"  />
+    <!-- Location of a folder with commons-collections jar -->
+    <property name="thirdparty.commons-collections" value="${sdkdir}"  />
+    <property name="thirdparty.commons-logging" value="${toolsdir}" />
+
+    <import file="build.common.xml"/>
+    <target name="all" depends="init-common,build-swag-war" description="Build all components">
+    </target>
+</project>
